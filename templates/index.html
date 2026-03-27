@@ -5,53 +5,222 @@
   <meta charset="UTF-8">
   <title>Empathy Engine</title>
   <style>
-    body { font-family: system-ui; max-width: 700px; margin: 3rem auto; padding: 0 1rem; }
-    textarea { width:100%; height:120px; font-size:16px; padding:12px; border-radius:8px; border:1px solid #ccc; }
-    button { background:#2B5BA1; color:#fff; border:none; padding:12px 28px;
-             border-radius:8px; font-size:16px; cursor:pointer; margin-top:12px; }
-    button:hover { background:#1E3A5F; }
-    #results { margin-top:2rem; display:none; }
-    .emotion-badge { display:inline-block; padding:4px 14px; border-radius:20px;
-                     background:#D6E4F7; color:#1E3A5F; font-weight:600; font-size:1.1rem; }
-    .bar-wrap { background:#eee; border-radius:8px; height:14px; margin:8px 0; }
-    .bar-fill { height:14px; border-radius:8px; background:#2B5BA1; transition:width 0.5s; }
-    #score-chart { margin-top: 1rem; }
-    .score-row { display:grid; grid-template-columns: 110px 1fr 56px; gap:10px; align-items:center; margin:7px 0; }
-    .score-label { font-size: 0.92rem; color:#1E3A5F; text-transform: capitalize; }
-    .score-track { background:#e7edf5; border-radius:7px; height:10px; overflow:hidden; }
-    .score-fill { height:100%; background:linear-gradient(90deg, #3c78c0, #2B5BA1); transition: width 0.5s ease; }
-    .score-value { font-size:0.86rem; color:#203248; text-align:right; }
-    .voice-panel { margin-top: 0.9rem; background:#f7fafd; border:1px solid #d8e3f2; border-radius:10px; padding:10px 12px; }
-    .voice-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:10px; margin-top:6px; }
-    .voice-item { background:#fff; border:1px solid #e3ecf8; border-radius:8px; padding:8px; }
-    .voice-k { font-size:0.78rem; color:#4b5f78; text-transform: uppercase; letter-spacing:0.03em; }
-    .voice-v { font-size:1rem; font-weight:700; color:#1E3A5F; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: #f5f7fa; }
+    
+    .container {
+      max-width: 1400px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    }
+    
+    .header {
+      grid-column: 1 / -1; margin-bottom: 0.5rem;
+    }
+    .header h1 { margin: 0 0 0.5rem 0; font-size: 1.8rem; }
+    .header p { margin: 0; color: #666; }
+    
+    /* LEFT COLUMN */
+    .left-panel {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    
+    .input-section {
+      background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    textarea {
+      width: 100%; height: 140px; font-size: 16px; padding: 12px; 
+      border-radius: 8px; border: 1px solid #ddd; font-family: system-ui;
+      resize: vertical;
+    }
+    textarea:focus { outline: none; border-color: #2B5BA1; box-shadow: 0 0 0 3px rgba(43,91,161,0.1); }
+    
+    .button-group { display: flex; gap: 0.5rem; }
+    button {
+      background: #2B5BA1; color: #fff; border: none; padding: 12px 28px;
+      border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 600;
+      flex: 1;
+    }
+    button:hover { background: #1E3A5F; }
+    button:active { transform: scale(0.98); }
+    
+    .results-left {
+      background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: none;
+    }
+    .results-left.active { display: block; }
+    
+    .emotion-section {
+      margin-bottom: 1.2rem;
+    }
+    
+    .emotion-section h3 {
+      margin: 0 0 0.5rem 0; font-size: 0.95rem; color: #666; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    
+    .emotion-badge {
+      display: inline-block; padding: 6px 16px; border-radius: 20px;
+      background: #D6E4F7; color: #1E3A5F; font-weight: 600; font-size: 1.1rem;
+    }
+    
+    .stat-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.6rem 0; border-bottom: 1px solid #eee;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { color: #666; font-size: 0.9rem; }
+    .stat-value { font-weight: 600; color: #1E3A5F; }
+    
+    .bar-wrap { background: #eee; border-radius: 8px; height: 16px; margin: 0.8rem 0; overflow: hidden; }
+    .bar-fill { height: 100%; background: #2B5BA1; transition: width 0.5s ease; }
+    
+    .audio-section {
+      margin-top: 1rem;
+    }
+    
+    audio {
+      width: 100%; margin-top: 0.8rem; border-radius: 6px;
+    }
+    
+    .engine-info {
+      margin-top: 0.8rem; font-size: 0.85rem; color: #666;
+    }
+    
+    /* RIGHT COLUMN */
+    .right-panel {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    
+    .right-panel.hidden {
+      visibility: hidden;
+    }
+    
+    .chart-section {
+      background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+      margin: 0 0 1rem 0; font-size: 1.05rem; font-weight: 600; color: #1E3A5F;
+    }
+    
+    #score-chart { display: flex; flex-direction: column; gap: 0.8rem; }
+    
+    .score-row {
+      display: grid; grid-template-columns: 80px 1fr 50px; gap: 12px; align-items: center;
+    }
+    
+    .score-label {
+      font-size: 0.9rem; color: #1E3A5F; font-weight: 500; text-align: left;
+    }
+    
+    .score-track {
+      background: #e7edf5; border-radius: 8px; height: 12px; overflow: hidden;
+    }
+    
+    .score-fill {
+      height: 100%; background: linear-gradient(90deg, #3c78c0, #2B5BA1);
+      transition: width 0.5s ease;
+    }
+    
+    .score-value {
+      font-size: 0.85rem; color: #1E3A5F; font-weight: 600; text-align: right;
+    }
+    
+    .voice-settings {
+      background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .voice-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    }
+    
+    .voice-item {
+      background: #f7fafd; border: 1px solid #d8e3f2; border-radius: 10px;
+      padding: 1.2rem; text-align: center;
+    }
+    
+    .voice-k {
+      font-size: 0.75rem; color: #4b5f78; text-transform: uppercase;
+      letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.6rem;
+    }
+    
+    .voice-v {
+      font-size: 1.4rem; font-weight: 700; color: #1E3A5F;
+    }
+    
+    @media (max-width: 1024px) {
+      .container { grid-template-columns: 1fr; }
+      .left-panel, .right-panel { grid-column: auto; }
+    }
   </style>
 </head>
 <body>
-  <h1>Empathy Engine</h1>
-  <p>Type any sentence. The AI will detect emotion and speak it expressively.</p>
-  <textarea id="text" placeholder="e.g. I just got promoted! OR I can't believe they did that."></textarea>
-  <br>
-  <button onclick="run()">Analyze &amp; Speak</button>
-  <div id="results">
-    <h3>Detected: <span class="emotion-badge" id="emotion-label"></span></h3>
-    <p>Confidence: <strong id="confidence"></strong></p>
-    <p>Intensity: <strong id="intensity"></strong></p>
-    <div class="bar-wrap"><div class="bar-fill" id="intensity-bar"></div></div>
-    <h4 style="margin:1rem 0 0.4rem;">Emotion Score Breakdown</h4>
-    <div id="score-chart"></div>
-    <div class="voice-panel">
-      <div><strong>Applied Voice Settings</strong></div>
-      <div class="voice-grid">
-        <div class="voice-item"><div class="voice-k">Rate</div><div class="voice-v" id="voice-rate">-</div></div>
-        <div class="voice-item"><div class="voice-k">Pitch</div><div class="voice-v" id="voice-pitch">-</div></div>
-        <div class="voice-item"><div class="voice-k">Volume</div><div class="voice-v" id="voice-volume">-</div></div>
+  <div class="container">
+    <div class="header">
+      <h1>Empathy Engine</h1>
+      <p>Type any sentence. The AI will detect emotion and speak it expressively.</p>
+    </div>
+    
+    <!-- LEFT COLUMN -->
+    <div class="left-panel">
+      <div class="input-section">
+        <textarea id="text" placeholder="e.g. I just got promoted! OR I can't believe they did that."></textarea>
+        <div class="button-group">
+          <button onclick="run()">Analyze &amp; Speak</button>
+        </div>
+      </div>
+      
+      <div class="results-left" id="resultsLeft">
+        <div class="emotion-section">
+          <h3>Detected</h3>
+          <span class="emotion-badge" id="emotion-label">-</span>
+          <div style="margin-top: 1rem;">
+            <div class="stat-row">
+              <span class="stat-label">Confidence</span>
+              <span class="stat-value" id="confidence">-</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Intensity</span>
+              <span class="stat-value" id="intensity">-</span>
+            </div>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill" id="intensity-bar" style="width:0%;"></div></div>
+        </div>
+        
+        <div class="audio-section">
+          <audio id="player" controls></audio>
+          <div class="engine-info">Engine Used: <strong id="engine">-</strong></div>
+        </div>
       </div>
     </div>
-    <audio id="player" controls style="width:100%;margin-top:1rem"></audio>
-    <p>Engine Used: <span id="engine"></span></p>
+    
+    <!-- RIGHT COLUMN -->
+    <div class="right-panel hidden" id="rightPanel">
+      <div class="chart-section">
+        <h2 class="section-title">Emotion Score Breakdown</h2>
+        <div id="score-chart"></div>
+      </div>
+      
+      <div class="voice-settings">
+        <h2 class="section-title">Applied Voice Settings</h2>
+        <div class="voice-grid">
+          <div class="voice-item">
+            <div class="voice-k">Rate</div>
+            <div class="voice-v" id="voice-rate">-</div>
+          </div>
+          <div class="voice-item">
+            <div class="voice-k">Pitch</div>
+            <div class="voice-v" id="voice-pitch">-</div>
+          </div>
+          <div class="voice-item">
+            <div class="voice-k">Volume</div>
+            <div class="voice-v" id="voice-volume">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+  
   <script>
   function renderScoreChart(allScores) {
     const chart = document.getElementById('score-chart');
@@ -86,19 +255,26 @@
   async function run() {
     const text = document.getElementById('text').value.trim();
     if (!text) return;
+    
     // 1. Get emotion data
     const ar = await fetch('/analyze', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({text})
     });
     const data = await ar.json();
+    
     document.getElementById('emotion-label').textContent = data.emotion;
     document.getElementById('confidence').textContent = (data.confidence*100).toFixed(1)+'%';
     document.getElementById('intensity').textContent = (data.intensity*100).toFixed(0)+'%';
     document.getElementById('intensity-bar').style.width = (data.intensity*100)+'%';
+    
     renderScoreChart(data.all_scores);
     renderVoiceSettings(data.voice_params || {});
-    document.getElementById('results').style.display = 'block';
+    
+    // Show results
+    document.getElementById('resultsLeft').classList.add('active');
+    document.getElementById('rightPanel').classList.remove('hidden');
+    
     // 2. Get and play audio
     const sr = await fetch('/speak', {
       method:'POST', headers:{'Content-Type':'application/json'},
