@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Cache / outputs
+.audio_cache/
+static/*.mp3
+static/*.wav
+
+# HuggingFace model cache (large — do NOT commit)
+.cache/
+
+# VS Code
+.vscode/settings.json
