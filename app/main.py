@@ -17,11 +17,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = BASE_DIR / ".env"
 
-print("Loading .env from:", env_path)
-
 load_dotenv(dotenv_path=env_path, override=True)
-
-print("Loaded KEY:", os.getenv("ELEVENLABS_API_KEY"))
 
 try:
 	from .audio_processor import process_audio

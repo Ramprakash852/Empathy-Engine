@@ -30,7 +30,6 @@ GTTS_TIMEOUT = 8
 
 def _get_elevenlabs_api_key() -> str:
 	key = os.getenv("ELEVENLABS_API_KEY", "").strip()
-	print("DEBUG KEY IN ORCHESTRATOR:", key)
 	return key
 
 
