@@ -15,6 +15,17 @@
                      background:#D6E4F7; color:#1E3A5F; font-weight:600; font-size:1.1rem; }
     .bar-wrap { background:#eee; border-radius:8px; height:14px; margin:8px 0; }
     .bar-fill { height:14px; border-radius:8px; background:#2B5BA1; transition:width 0.5s; }
+    #score-chart { margin-top: 1rem; }
+    .score-row { display:grid; grid-template-columns: 110px 1fr 56px; gap:10px; align-items:center; margin:7px 0; }
+    .score-label { font-size: 0.92rem; color:#1E3A5F; text-transform: capitalize; }
+    .score-track { background:#e7edf5; border-radius:7px; height:10px; overflow:hidden; }
+    .score-fill { height:100%; background:linear-gradient(90deg, #3c78c0, #2B5BA1); transition: width 0.5s ease; }
+    .score-value { font-size:0.86rem; color:#203248; text-align:right; }
+    .voice-panel { margin-top: 0.9rem; background:#f7fafd; border:1px solid #d8e3f2; border-radius:10px; padding:10px 12px; }
+    .voice-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:10px; margin-top:6px; }
+    .voice-item { background:#fff; border:1px solid #e3ecf8; border-radius:8px; padding:8px; }
+    .voice-k { font-size:0.78rem; color:#4b5f78; text-transform: uppercase; letter-spacing:0.03em; }
+    .voice-v { font-size:1rem; font-weight:700; color:#1E3A5F; }
   </style>
 </head>
 <body>
@@ -28,10 +39,50 @@
     <p>Confidence: <strong id="confidence"></strong></p>
     <p>Intensity: <strong id="intensity"></strong></p>
     <div class="bar-wrap"><div class="bar-fill" id="intensity-bar"></div></div>
+    <h4 style="margin:1rem 0 0.4rem;">Emotion Score Breakdown</h4>
+    <div id="score-chart"></div>
+    <div class="voice-panel">
+      <div><strong>Applied Voice Settings</strong></div>
+      <div class="voice-grid">
+        <div class="voice-item"><div class="voice-k">Rate</div><div class="voice-v" id="voice-rate">-</div></div>
+        <div class="voice-item"><div class="voice-k">Pitch</div><div class="voice-v" id="voice-pitch">-</div></div>
+        <div class="voice-item"><div class="voice-k">Volume</div><div class="voice-v" id="voice-volume">-</div></div>
+      </div>
+    </div>
     <audio id="player" controls style="width:100%;margin-top:1rem"></audio>
     <p>Engine Used: <span id="engine"></span></p>
   </div>
   <script>
+  function renderScoreChart(allScores) {
+    const chart = document.getElementById('score-chart');
+    chart.innerHTML = '';
+
+    const entries = Object.entries(allScores || {})
+      .sort((a, b) => b[1] - a[1]);
+
+    for (const [emotion, score] of entries) {
+      const pct = Math.max(0, Math.min(100, score * 100));
+      const row = document.createElement('div');
+      row.className = 'score-row';
+      row.innerHTML = `
+        <span class="score-label">${emotion}</span>
+        <div class="score-track"><div class="score-fill" style="width:${pct}%;"></div></div>
+        <span class="score-value">${pct.toFixed(1)}%</span>
+      `;
+      chart.appendChild(row);
+    }
+  }
+
+  function renderVoiceSettings(voiceParams) {
+    const rate = Number(voiceParams?.rate ?? 0);
+    const pitch = Number(voiceParams?.pitch ?? 0);
+    const volume = Number((voiceParams?.vol ?? voiceParams?.volume) ?? 0);
+
+    document.getElementById('voice-rate').textContent = Number.isFinite(rate) ? rate.toFixed(3) : '-';
+    document.getElementById('voice-pitch').textContent = Number.isFinite(pitch) ? pitch.toFixed(3) : '-';
+    document.getElementById('voice-volume').textContent = Number.isFinite(volume) ? volume.toFixed(3) : '-';
+  }
+
   async function run() {
     const text = document.getElementById('text').value.trim();
     if (!text) return;
@@ -45,6 +96,8 @@
     document.getElementById('confidence').textContent = (data.confidence*100).toFixed(1)+'%';
     document.getElementById('intensity').textContent = (data.intensity*100).toFixed(0)+'%';
     document.getElementById('intensity-bar').style.width = (data.intensity*100)+'%';
+    renderScoreChart(data.all_scores);
+    renderVoiceSettings(data.voice_params || {});
     document.getElementById('results').style.display = 'block';
     // 2. Get and play audio
     const sr = await fetch('/speak', {
