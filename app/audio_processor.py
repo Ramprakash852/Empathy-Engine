@@ -115,7 +115,7 @@ def process_audio(
 	if voice_params is not None:
 		if not isinstance(voice_params, dict):
 			raise ValueError("voice_params must be a dictionary when provided")
-		resolved_rate = float(voice_params.get("rate", resolved_rate))
+		resolved_rate = float(1.0 + (voice_params.get("rate", 1.0) - 1.0) * 1.5)
 		resolved_pitch = float(voice_params.get("pitch", resolved_pitch))
 		resolved_volume = float(voice_params.get("vol", voice_params.get("volume", resolved_volume)))
 		# Voice map pitch values are expressed as pitch points; convert to semitones.
@@ -123,8 +123,7 @@ def process_audio(
 
 	emotion = str(voice_params.get("emotion", "")).lower() if voice_params else ""
 
-	# Amplify playback-rate delta from 1.0 so differences are more audible.
-	effective_rate = 1.0 + ((resolved_rate - 1.0) * 1.5)
+	effective_rate = resolved_rate
 	normalized_rate = _clamp(effective_rate, 0.5, 2.0)
 	normalized_pitch = _clamp(resolved_pitch, -24.0, 24.0)
 	normalized_volume = _clamp(resolved_volume, 0.0, 2.0)

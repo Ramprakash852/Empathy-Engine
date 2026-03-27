@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import uuid
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -63,8 +64,8 @@ _TEMPLATES_DIR = _PROJECT_ROOT / "templates"
 _STATIC_DIR = _PROJECT_ROOT / "static"
 templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
 
-if _STATIC_DIR.exists():
-	app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
+_STATIC_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
 
 @app.get("/")
@@ -158,6 +159,10 @@ def speak(payload: SpeakRequest) -> Response:
 			input_format=input_format,
 			output_bitrate=payload.output_bitrate,
 		)
+
+		filename = f"output_{uuid.uuid4().hex[:8]}.mp3"
+		(_STATIC_DIR / filename).write_bytes(processed_audio)
+		logger.info(f"Saved: static/{filename}")
 
 		set_cached(
 			text,
