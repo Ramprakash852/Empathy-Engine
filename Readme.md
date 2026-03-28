@@ -176,11 +176,100 @@ After TTS generation:
 * Volume normalization
 * Pause injection
 
-📌 Implementation:
+
 
 ---
 
-# 📦 Project Structure
+## 🧠 Design Decisions & Tradeoffs (Key Insights)
+
+### 🔹 1. Why Not Direct TTS Emotion?
+
+Most TTS systems rely on predefined voice styles and do not explicitly model emotional intensity.
+
+👉 Instead, this system:
+
+* Separates **emotion detection** from **speech generation**
+* Explicitly controls voice parameters (rate, pitch, pauses)
+
+✔ Result: More interpretable and controllable behavior
+
+---
+
+### 🔹 2. Hybrid Intensity Scoring
+
+Rather than relying only on model confidence:
+
+We combine:
+
+* Model confidence
+* Text features (punctuation, capitalization)
+
+✔ This improves realism in cases like:
+
+* “THIS IS AMAZING!!!” (high intensity)
+* “I feel okay.” (low intensity)
+
+---
+
+### 🔹 3. Multi-Engine TTS Strategy
+
+Problem:
+
+* External APIs (like ElevenLabs) can fail due to:
+
+        * rate limits
+        * free-tier restrictions
+
+Solution:
+
+* Parallel execution + fallback system
+
+✔ Ensures:
+
+* Reliability
+* Consistent output
+* Production readiness
+
+---
+
+### 🔹 4. Offline + Online Balance
+
+* ElevenLabs → high quality
+* gTTS → fast fallback
+* pyttsx3 → fully offline backup
+
+✔ System remains functional even without internet
+
+---
+
+### 🔹 5. Modularity for Scalability
+
+Each component is isolated:
+
+* Emotion detection
+* Intensity scoring
+* Voice mapping
+* TTS generation
+
+✔ Enables:
+
+* Easy upgrades
+* Model replacement
+* Future extensions
+
+---
+
+### 🎯 Key Takeaway
+
+> The system is designed not just for functionality, but for **robustness, control, and scalability**, making it closer to a real-world production system.
+
+---
+
+ # 📌 Implementation:
+
+---
+
+## 📦 Project Structure
 
 ```text
 Empathy/
