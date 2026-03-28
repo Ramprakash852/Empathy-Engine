@@ -13,6 +13,10 @@ Traditional Text-to-Speech (TTS) systems generate monotonous audio. This project
 
 ---
 
+## 🖥️ Application Preview
+
+![Homepage UI](assets/homepage.png)
+
 ## 🎯 Problem Statement
 
 Standard TTS systems lack emotional depth.
@@ -38,6 +42,8 @@ Text Understanding → Emotional Expression → Human-like Speech
 ---
 
 # 🏗️ System Architecture
+
+![System Architecture](assets/architecture.png)
 
 ```text
 User Input (Web UI / CLI / API)
@@ -252,7 +258,15 @@ http://127.0.0.1:8000
 
 ---
 
-# 🧪 Testing Examples
+## 🧪 Testing Examples
+
+### Example Input
+"I don’t even know where to begin. At first, everything seemed perfectly fine and I was actually excited about how things were going. But slowly, things started falling apart. Now I feel frustrated, confused, and honestly a bit lost. I just wish things had turned out differently."
+
+### Output Visualization
+
+![Test Output](assets/homepage2.png)
+
 
 ### Joy
 
@@ -344,17 +358,6 @@ This is completely unacceptable!
 * Real-time streaming
 * Voice cloning
 * Frontend enhancement
-
----
-
-# 🎯 Submission Notes
-
-This project demonstrates:
-
-* System design thinking
-* Practical AI integration
-* Handling real-world API failures
-* Building production-ready systems
 
 ---
 
