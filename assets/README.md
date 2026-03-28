@@ -6,19 +6,14 @@ A FastAPI service that detects emotion from text using a transformer model, scor
 
 ---
 
-## 🖥️ Application Preview
-
-![Homepage UI](assets/homepage.png)
-
 ## Table of Contents
 
 1. [Project Description](#1-project-description)
-2. [System Architecture](#2-system-architecture)
-3. [Setup & Run Instructions](#3-setup--run-instructions)
-4. [Design Choices & Emotion-to-Voice Logic](#4-design-choices--emotion-to-voice-logic)                                                                            
-5. [API Reference](#4-api-reference)
-6. [Project Structure](#5-project-structure)
-7. [Challenges & Solutions](#6-challenges--solutions)
+2. [Setup & Run Instructions](#2-setup--run-instructions)
+3. [Design Choices & Emotion-to-Voice Logic](#3-design-choices--emotion-to-voice-logic)
+4. [API Reference](#4-api-reference)
+5. [Project Structure](#5-project-structure)
+6. [Challenges & Solutions](#6-challenges--solutions)
 
 ---
 
@@ -51,11 +46,7 @@ Most TTS tools expose a single `emotion=happy` flag. This system treats emotion 
 
 ---
 
-## 2. 🏗️ System Architecture
-
-![System Architecture](assets/architecture1.png)
-
-## 3. Setup & Run Instructions
+## 2. Setup & Run Instructions
 
 ### Prerequisites
 
@@ -220,7 +211,7 @@ Use these three to demonstrate the full emotion range:
 
 ---
 
-## 4. Design Choices & Emotion-to-Voice Logic
+## 3. Design Choices & Emotion-to-Voice Logic
 
 This section documents the reasoning behind every major technical decision.
 
@@ -337,7 +328,7 @@ FastAPI provides automatic request validation via Pydantic, automatic OpenAPI do
 
 ---
 
-## 5. API Reference
+## 4. API Reference
 
 ### `POST /analyze`
 
@@ -399,24 +390,9 @@ http://127.0.0.1:8000/docs
 
 FastAPI generates this automatically from the Pydantic models.
 
-
 ---
 
-## 🧪 Testing Examples
-
-### Example Input
-
-```json
-{ "text": "I don’t even know where to begin. At first, everything seemed perfectly fine and I was actually excited about how things were going. But slowly, things started falling apart. Now I feel frustrated, confused, and honestly a bit lost. I just wish things had turned out differently." }
-```
-
-### Output Visualization
-
-![Test Output](assets/homepage2.png)
-
----
-
-## 6. Project Structure
+## 5. Project Structure
 
 ```
 Empathy-Engine/
@@ -441,7 +417,7 @@ Empathy-Engine/
 
 ---
 
-## 7. Challenges & Solutions
+## 6. Challenges & Solutions
 
 ### Challenge 1 — ffmpeg not found at runtime
 
@@ -487,4 +463,3 @@ pydub's frame-rate-based pitch/rate trick produces modest effects. Judges compar
 
 Bhukya Ramprakash
 GitHub: [Ramprakash852/Empathy-Engine](https://github.com/Ramprakash852/Empathy-Engine)
-
