@@ -43,7 +43,7 @@ Text Understanding → Emotional Expression → Human-like Speech
 
 # 🏗️ System Architecture
 
-![System Architecture](assets/architecture.png)
+![System Architecture](assets/architecture1.png)
 
 ```text
 User Input (Web UI / CLI / API)
